@@ -261,7 +261,10 @@ export default function VentasPage() {
       })
 
       toast.success('Venta registrada exitosamente')
-      setSuccessVenta({ venta: ventaData, items: itemsWithProducts })
+      setSuccessVenta({ 
+        venta: { ...ventaData, cliente_nombre: clienteNombre }, 
+        items: itemsWithProducts 
+      })
 
       // Reset
       setCreateModalOpen(false)
@@ -336,7 +339,11 @@ export default function VentasPage() {
       ventaItems = data || []
     }
 
-    const clienteNombre = (venta as any).cliente_nombre || 'Sin cliente'
+    const cli = venta.cliente_id
+      ? clientes.find((c) => c.id === venta.cliente_id)
+      : null
+
+    const clienteNombre = (venta as any).cliente_nombre || cli?.nombre || 'Sin cliente'
 
     generatePdf({
       title: `Comprobante de Venta #${venta.id}`,
