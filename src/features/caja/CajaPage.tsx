@@ -373,33 +373,33 @@ export default function CajaPage() {
             </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-6 mb-8">
-            <div className="p-5 md:p-6 rounded-2xl border border-gray-100 bg-gray-50/50 shadow-sm">
+          <div className="flex flex-wrap gap-5 lg:gap-6 mb-10">
+            <div className="flex-1 min-w-[200px] p-6 lg:p-8 rounded-3xl border border-gray-100 bg-gray-50/50 shadow-sm">
               <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-2">Monto Inicial</p>
-              <p className="text-xl xl:text-2xl font-extrabold text-gray-900">{formatCurrency(openSession.monto_inicial)}</p>
+              <p className="text-xl lg:text-2xl font-extrabold text-gray-900">{formatCurrency(openSession.monto_inicial)}</p>
             </div>
-            <div className="p-5 md:p-6 rounded-2xl border border-gray-100 bg-gray-50/50 shadow-sm">
+            <div className="flex-1 min-w-[200px] p-6 lg:p-8 rounded-3xl border border-gray-100 bg-gray-50/50 shadow-sm">
               <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
                 <TrendingUp size={16} className="text-emerald-500" /> Ventas
               </p>
-              <p className="text-xl xl:text-2xl font-extrabold text-gray-900">{formatCurrency(0)}</p>
+              <p className="text-xl lg:text-2xl font-extrabold text-gray-900">{formatCurrency(0)}</p>
             </div>
-            <div className="p-5 md:p-6 rounded-2xl border border-gray-100 bg-gray-50/50 shadow-sm">
+            <div className="flex-1 min-w-[200px] p-6 lg:p-8 rounded-3xl border border-gray-100 bg-gray-50/50 shadow-sm">
               <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
                 <ArrowDownCircle size={16} className="text-emerald-500" /> Ingresos
               </p>
-              <p className="text-xl xl:text-2xl font-extrabold text-gray-900">{formatCurrency(calcTotalIngresos)}</p>
+              <p className="text-xl lg:text-2xl font-extrabold text-gray-900">{formatCurrency(calcTotalIngresos)}</p>
             </div>
-            <div className="p-5 md:p-6 rounded-2xl border border-gray-100 bg-gray-50/50 shadow-sm">
+            <div className="flex-1 min-w-[200px] p-6 lg:p-8 rounded-3xl border border-gray-100 bg-gray-50/50 shadow-sm">
               <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
                 <ArrowUpCircle size={16} className="text-red-500" /> Egresos
               </p>
-              <p className="text-xl xl:text-2xl font-extrabold text-gray-900">{formatCurrency(calcTotalEgresos)}</p>
+              <p className="text-xl lg:text-2xl font-extrabold text-gray-900">{formatCurrency(calcTotalEgresos)}</p>
             </div>
-            <div className="p-5 md:p-6 rounded-2xl border-2 border-primary-100 bg-primary-50/50 shadow-sm relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-16 h-16 bg-primary-100 rounded-bl-full opacity-40"></div>
+            <div className="flex-1 min-w-[220px] p-6 lg:p-8 rounded-3xl border-2 border-primary-100 bg-primary-50/50 shadow-sm relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-primary-100 rounded-bl-full opacity-40"></div>
               <p className="text-xs text-primary-600 font-bold uppercase tracking-wider mb-2 relative z-10">Saldo Calculado</p>
-              <p className="text-xl xl:text-2xl font-extrabold text-primary-700 relative z-10">{formatCurrency(montoCalculadoActual)}</p>
+              <p className="text-xl lg:text-2xl font-extrabold text-primary-700 relative z-10">{formatCurrency(montoCalculadoActual)}</p>
             </div>
           </div>
           
