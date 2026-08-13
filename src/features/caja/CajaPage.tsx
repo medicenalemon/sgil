@@ -27,6 +27,7 @@ export default function CajaPage() {
   // Data state
   const [sesiones, setSesiones] = useState<CajaSesion[]>([])
   const [movimientos, setMovimientos] = useState<CajaMovimiento[]>([])
+  const [totalVentasSesion, setTotalVentasSesion] = useState(0)
 
   const openSession = useMemo(() => sesiones.find(s => s.estado === 'abierta'), [sesiones])
   
@@ -73,8 +74,19 @@ export default function CajaPage() {
         
         if (movsError) throw movsError
         setMovimientos(movsData || [])
+
+        // Fetch sales made during this session
+        const { data: ventasData, error: ventasError } = await supabase
+          .from('ventas')
+          .select('total')
+          .gte('fecha', activeSession.fecha_apertura)
+        
+        if (ventasError) throw ventasError
+        const sumVentas = (ventasData || []).reduce((acc: number, v: any) => acc + Number(v.total), 0)
+        setTotalVentasSesion(sumVentas)
       } else {
         setMovimientos([])
+        setTotalVentasSesion(0)
       }
     } catch (error: any) {
       console.error('Error fetching caja data:', error)
@@ -87,7 +99,8 @@ export default function CajaPage() {
   }, [loadData])
 
   // ---- Stats calculations ----
-  const calcTotalIngresos = movimientos.filter(m => m.tipo === 'ingreso').reduce((acc, m) => acc + m.monto, 0)
+  const ingresosManual = movimientos.filter(m => m.tipo === 'ingreso').reduce((acc, m) => acc + m.monto, 0)
+  const calcTotalIngresos = totalVentasSesion + ingresosManual
   const calcTotalEgresos = movimientos.filter(m => m.tipo === 'egreso').reduce((acc, m) => acc + m.monto, 0)
   const montoCalculadoActual = (openSession?.monto_inicial || 0) + calcTotalIngresos - calcTotalEgresos
 
@@ -384,7 +397,7 @@ export default function CajaPage() {
               <p className="text-gray-500 font-semibold uppercase flex items-center" style={{ fontSize: '10px', letterSpacing: '0.06em', marginBottom: '6px', gap: '4px' }}>
                 <TrendingUp size={13} className="text-emerald-500" /> Ventas
               </p>
-              <p className="font-extrabold text-gray-900" style={{ fontSize: '16px' }}>{formatCurrency(0)}</p>
+              <p className="font-extrabold text-gray-900" style={{ fontSize: '16px' }}>{formatCurrency(totalVentasSesion)}</p>
             </div>
             <div className="rounded-xl border border-gray-100 bg-gray-50/60" style={{ padding: '16px 20px' }}>
               <p className="text-gray-500 font-semibold uppercase flex items-center" style={{ fontSize: '10px', letterSpacing: '0.06em', marginBottom: '6px', gap: '4px' }}>
