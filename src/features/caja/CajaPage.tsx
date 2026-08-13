@@ -8,7 +8,8 @@ import {
   TrendingUp,
   ClipboardList,
   Archive,
-  LockKeyhole
+  LockKeyhole,
+  ShoppingCart
 } from 'lucide-react'
 import { toast } from 'sonner'
 import DataTable from '@/components/shared/DataTable'
@@ -19,6 +20,15 @@ import { supabase } from '@/lib/supabase'
 import { generatePdf, formatCurrency, formatDateTime } from '@/lib/pdf/pdfGenerator'
 import type { Column, CajaSesion, CajaMovimiento } from '@/lib/types'
 
+// Unified movement type that combines caja_movimientos + ventas
+interface MovimientoUnificado {
+  id: string
+  fecha: string
+  tipo: 'ingreso' | 'egreso' | 'arqueo' | 'venta'
+  descripcion: string
+  monto: number
+}
+
 export default function CajaPage() {
   const { user } = useAuth()
   const { logAuditoria } = useAuditoria()
@@ -28,6 +38,7 @@ export default function CajaPage() {
   const [sesiones, setSesiones] = useState<CajaSesion[]>([])
   const [movimientos, setMovimientos] = useState<CajaMovimiento[]>([])
   const [totalVentasSesion, setTotalVentasSesion] = useState(0)
+  const [movimientosUnificados, setMovimientosUnificados] = useState<MovimientoUnificado[]>([])
 
   const openSession = useMemo(() => sesiones.find(s => s.estado === 'abierta'), [sesiones])
   
@@ -75,18 +86,47 @@ export default function CajaPage() {
         if (movsError) throw movsError
         setMovimientos(movsData || [])
 
-        // Fetch sales made during this session
+        // Fetch sales made during this session (with client name & payment method)
         const { data: ventasData, error: ventasError } = await supabase
           .from('ventas')
-          .select('total')
+          .select('id, fecha, total, metodo_pago, clientes(nombre)')
           .gte('fecha', activeSession.fecha_apertura)
+          .order('fecha', { ascending: false })
         
         if (ventasError) throw ventasError
-        const sumVentas = (ventasData || []).reduce((acc: number, v: any) => acc + Number(v.total), 0)
+        const ventas = ventasData || []
+        const sumVentas = ventas.reduce((acc: number, v: any) => acc + Number(v.total), 0)
         setTotalVentasSesion(sumVentas)
+
+        // Build unified movements list
+        const movsUnif: MovimientoUnificado[] = (movsData || []).map((m: CajaMovimiento) => ({
+          id: `mov-${m.id}`,
+          fecha: m.fecha,
+          tipo: m.tipo,
+          descripcion: m.descripcion || '',
+          monto: m.monto,
+        }))
+
+        const ventasUnif: MovimientoUnificado[] = ventas.map((v: any) => {
+          const clienteNombre = v.clientes?.nombre || 'Sin cliente'
+          return {
+            id: `venta-${v.id}`,
+            fecha: v.fecha,
+            tipo: 'venta' as const,
+            descripcion: `Venta #${v.id} — ${clienteNombre} — ${v.metodo_pago || 'S/M'}`,
+            monto: Number(v.total),
+          }
+        })
+
+        // Merge and sort by date descending
+        const todos = [...movsUnif, ...ventasUnif].sort(
+          (a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
+        )
+        setMovimientosUnificados(todos)
       } else {
         setMovimientos([])
         setTotalVentasSesion(0)
+        setMovimientosUnificados([])
       }
     } catch (error: any) {
       console.error('Error fetching caja data:', error)
@@ -278,21 +318,34 @@ export default function CajaPage() {
   }
 
   // ---- Columns ----
-  const colsMovimientos: Column<CajaMovimiento>[] = [
-    { key: 'fecha', header: 'Hora', render: m => formatDateTime(m.fecha).split(' ')[1] },
+  const colsMovimientosUnif: Column<MovimientoUnificado>[] = [
+    { key: 'fecha' as any, header: 'Hora', render: m => formatDateTime(m.fecha).split(' ')[1] },
     { 
-      key: 'tipo', 
+      key: 'tipo' as any, 
       header: 'Tipo',
-      render: m => m.tipo === 'ingreso' ? 
-        <span className="flex items-center gap-1 text-green-600 font-medium"><ArrowUpCircle size={14}/> Ingreso</span> :
-        (m.tipo === 'egreso' ? <span className="flex items-center gap-1 text-red-600 font-medium"><ArrowDownCircle size={14}/> Egreso</span> : 
-        <span className="text-gray-500 font-medium">Arqueo</span>)
+      render: m => {
+        switch (m.tipo) {
+          case 'venta':
+            return <span className="flex items-center gap-1 text-emerald-600 font-semibold"><ShoppingCart size={14}/> Venta</span>
+          case 'ingreso':
+            return <span className="flex items-center gap-1 text-green-600 font-semibold"><ArrowUpCircle size={14}/> Ingreso</span>
+          case 'egreso':
+            return <span className="flex items-center gap-1 text-red-600 font-semibold"><ArrowDownCircle size={14}/> Egreso</span>
+          case 'arqueo':
+            return <span className="text-gray-500 font-semibold">Arqueo</span>
+          default:
+            return <span className="text-gray-500">{m.tipo}</span>
+        }
+      }
     },
-    { key: 'descripcion', header: 'Descripción' },
+    { key: 'descripcion' as any, header: 'Descripción' },
     { 
-      key: 'monto', 
+      key: 'monto' as any, 
       header: 'Monto', 
-      render: m => <span className={`font-semibold ${m.tipo === 'ingreso' ? 'text-green-600' : (m.tipo === 'egreso' ? 'text-red-600' : 'text-gray-800')}`}>{formatCurrency(m.monto)}</span> 
+      render: m => {
+        const color = m.tipo === 'venta' ? 'text-emerald-600' : m.tipo === 'ingreso' ? 'text-green-600' : m.tipo === 'egreso' ? 'text-red-600' : 'text-gray-800'
+        return <span className={`font-semibold ${color}`}>{m.tipo === 'egreso' ? '-' : '+'}{formatCurrency(m.monto)}</span>
+      }
     }
   ]
 
@@ -436,17 +489,17 @@ export default function CajaPage() {
         <div className="mb-12">
           <h3 className="text-xl font-extrabold text-gray-900 mb-6 flex items-center gap-2">
             Movimientos de la sesión
-            <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-sm font-bold">{movimientos.length}</span>
+            <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-sm font-bold">{movimientosUnificados.length}</span>
           </h3>
-          {movimientos.length === 0 ? (
+          {movimientosUnificados.length === 0 ? (
             <div className="bg-white rounded-2xl border border-gray-200 p-10 text-center text-gray-500 font-medium shadow-sm">
               <ClipboardList className="w-12 h-12 mx-auto text-gray-300 mb-4" />
               Aún no hay movimientos registrados en esta sesión.
             </div>
           ) : (
             <DataTable
-              data={movimientos}
-              columns={colsMovimientos}
+              data={movimientosUnificados}
+              columns={colsMovimientosUnif as any}
               searchPlaceholder="Buscar por descripción..."
               searchKeys={['descripcion']}
               emptyMessage="No hay movimientos"
