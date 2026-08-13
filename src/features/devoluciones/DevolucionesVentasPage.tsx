@@ -153,21 +153,7 @@ export default function DevolucionesVentasPage() {
 
       if (error) throw error
 
-      // Note: We DO NOT update the real stock here because returned products from sales 
-      // are considered defective/unusable (as requested).
-      // However, we DO log the movement so it appears in the Stock history.
-      await supabase
-        .from('movimientos_stock')
-        .insert({
-          fecha: now,
-          producto_id: item.producto_id,
-          tipo: 'entrada',
-          cantidad: cant,
-          motivo: `Devolución de Venta (Defectuoso): ${motivo}`,
-          referencia_tipo: 'devolucion_venta',
-          referencia_id: newDev.id,
-          usuario_id: user?.id
-        })
+      // Stock movements are handled automatically by database triggers
 
       logAuditoria('devoluciones', 'Registro devolución de venta', { devId: newDev.id, venta: referenciaId, valor: valorDevolucion })
       toast.success('Devolución de venta registrada')

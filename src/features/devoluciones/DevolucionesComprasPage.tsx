@@ -154,35 +154,7 @@ export default function DevolucionesComprasPage() {
 
       if (error) throw error
 
-      // 1. Fetch current stock
-      const { data: prodData } = await supabase
-        .from('productos')
-        .select('stock')
-        .eq('id', item.producto_id)
-        .single()
-      
-      const currentStock = prodData?.stock || 0
-      const newStock = Math.max(0, currentStock - cant) // Prevent negative stock
-
-      // 2. Update product stock
-      await supabase
-        .from('productos')
-        .update({ stock: newStock })
-        .eq('id', item.producto_id)
-
-      // 3. Insert stock movement
-      await supabase
-        .from('movimientos_stock')
-        .insert({
-          fecha: now,
-          producto_id: item.producto_id,
-          tipo: 'salida',
-          cantidad: cant,
-          motivo: `Devolución de Compra: ${motivo}`,
-          referencia_tipo: 'devolucion_compra',
-          referencia_id: newDev.id,
-          usuario_id: user?.id
-        })
+      // Stock updates and movements are handled automatically by database triggers
 
       logAuditoria('devoluciones', 'Registro devolución de compra', { devId: newDev.id, compra: referenciaId, valor: valorDevolucion })
       toast.success('Devolución de compra registrada')
