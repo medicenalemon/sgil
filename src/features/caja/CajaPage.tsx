@@ -51,12 +51,15 @@ export default function CajaPage() {
     try {
       const { data: sesionesData, error: sesionesError } = await supabase
         .from('caja_sesiones')
-        .select('*')
+        .select('*, profiles(username)')
         .order('id', { ascending: false })
       
       if (sesionesError) throw sesionesError
       
-      const loadedSesiones = sesionesData || []
+      const loadedSesiones = (sesionesData || []).map((s: any) => ({
+        ...s,
+        username: s.profiles?.username || s.usuario_id
+      }))
       setSesiones(loadedSesiones)
 
       const activeSession = loadedSesiones.find((s: any) => s.estado === 'abierta')
@@ -282,7 +285,7 @@ export default function CajaPage() {
 
   const colsSesiones: Column<CajaSesion>[] = [
     { key: 'id', header: '#' },
-    { key: 'usuario_id', header: 'Usuario', render: s => s.usuario_id === 'demo' ? 'Administrador' : s.usuario_id },
+    { key: 'usuario_id', header: 'Usuario', render: s => <span className="font-medium text-gray-700">{s.username || s.usuario_id}</span> },
     { key: 'fecha_apertura', header: 'Apertura', render: s => formatDateTime(s.fecha_apertura) },
     { key: 'fecha_cierre', header: 'Cierre', render: s => s.fecha_cierre ? formatDateTime(s.fecha_cierre) : '—' },
     { key: 'monto_inicial', header: 'Inicial', render: s => formatCurrency(s.monto_inicial) },
@@ -299,7 +302,7 @@ export default function CajaPage() {
       header: 'Estado', 
       render: s => (
         <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-          s.estado === 'abierta' ? 'bg-primary-600 text-white' : 'bg-primary-50 text-primary-700'
+          s.estado === 'abierta' ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-600'
         }`}>
           {s.estado}
         </span>
@@ -318,7 +321,7 @@ export default function CajaPage() {
             Apertura, cierre, arqueo y movimientos de caja
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           {openSession ? (
             <button className="btn btn-primary bg-red-600 border-red-600 hover:bg-red-700 font-semibold" onClick={() => setCierreModalOpen(true)}>
               <LockKeyhole size={18} />
@@ -335,14 +338,14 @@ export default function CajaPage() {
 
       {!openSession && (
         <div 
-          className="bg-white rounded-xl border border-gray-200 flex flex-col items-center justify-center text-center shadow-sm"
-          style={{ minHeight: '200px', marginBottom: '32px' }}
+          className="bg-white rounded-2xl border border-gray-200 flex flex-col items-center justify-center text-center shadow-sm"
+          style={{ minHeight: '220px', marginBottom: '32px' }}
         >
           <Wallet className="w-16 h-16 text-gray-400 mb-6" strokeWidth={1.5} />
-          <p className="text-gray-500 text-lg mb-8 font-medium">
-            No hay caja abierta. Abrí una nueva sesión para comenzar a registrar movimientos.
+          <p className="text-gray-500 text-[15px] mb-8 font-medium max-w-md">
+            No hay caja abierta. Abrí una nueva sesión para comenzar a registrar movimientos y ventas.
           </p>
-          <button className="btn btn-primary font-semibold" onClick={() => setAperturaModalOpen(true)}>
+          <button className="btn btn-primary font-semibold px-6 py-2.5" onClick={() => setAperturaModalOpen(true)}>
             <Archive size={18} />
             Abrir Caja
           </button>
@@ -350,72 +353,81 @@ export default function CajaPage() {
       )}
 
       {openSession && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-8 shadow-sm">
-          <div className="flex justify-between items-start mb-6">
-            <div className="flex gap-3">
-              <div className="text-primary-600 mt-1">
-                <Wallet className="w-6 h-6" strokeWidth={1.5} />
+        <div className="bg-white rounded-2xl border border-gray-200 p-8 mb-10 shadow-sm">
+          <div className="flex justify-between items-start mb-8">
+            <div className="flex gap-4 items-center">
+              <div className="text-primary-600 bg-primary-50 p-3 rounded-xl">
+                <Wallet className="w-7 h-7" strokeWidth={1.5} />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-gray-900">Caja #{openSession.id} — Abierta</h2>
-                <p className="text-sm text-gray-500 font-medium">Por {openSession.usuario_id === 'demo' ? 'Administrador' : openSession.usuario_id} · desde {formatDateTime(openSession.fecha_apertura)}</p>
+                <h2 className="text-[22px] font-bold text-gray-900 mb-1">Caja #{openSession.id} — Abierta</h2>
+                <p className="text-[15px] text-gray-500 font-medium">
+                  Por <span className="font-semibold text-gray-700">{openSession.username || openSession.usuario_id}</span> · desde el {formatDateTime(openSession.fecha_apertura)}
+                </p>
               </div>
             </div>
             <div>
-              <span className="bg-primary-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">
+              <span className="bg-primary-600 text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest shadow-sm">
                 Abierta
               </span>
             </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
-            <div className="p-4 rounded-xl border border-gray-200 bg-white">
-              <p className="text-xs text-gray-500 font-medium mb-1">Monto Inicial</p>
-              <p className="text-2xl font-bold text-gray-900">{formatCurrency(openSession.monto_inicial)}</p>
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-5 mb-8">
+            <div className="p-5 rounded-2xl border border-gray-100 bg-gray-50/50 shadow-sm">
+              <p className="text-[13px] text-gray-500 font-semibold uppercase tracking-wider mb-2">Monto Inicial</p>
+              <p className="text-2xl font-extrabold text-gray-900">{formatCurrency(openSession.monto_inicial)}</p>
             </div>
-            <div className="p-4 rounded-xl border border-gray-200 bg-white">
-              <p className="text-xs text-gray-500 font-medium mb-1 flex items-center gap-1">
-                <TrendingUp size={14} className="text-green-500" /> Ventas
+            <div className="p-5 rounded-2xl border border-gray-100 bg-gray-50/50 shadow-sm">
+              <p className="text-[13px] text-gray-500 font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <TrendingUp size={16} className="text-emerald-500" /> Ventas
               </p>
-              <p className="text-2xl font-bold text-gray-900">{formatCurrency(0)}</p>
+              <p className="text-2xl font-extrabold text-gray-900">{formatCurrency(0)}</p>
             </div>
-            <div className="p-4 rounded-xl border border-gray-200 bg-white">
-              <p className="text-xs text-gray-500 font-medium mb-1 flex items-center gap-1">
-                <ArrowDownCircle size={14} className="text-green-500" /> Ingresos
+            <div className="p-5 rounded-2xl border border-gray-100 bg-gray-50/50 shadow-sm">
+              <p className="text-[13px] text-gray-500 font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <ArrowDownCircle size={16} className="text-emerald-500" /> Ingresos
               </p>
-              <p className="text-2xl font-bold text-gray-900">{formatCurrency(calcTotalIngresos)}</p>
+              <p className="text-2xl font-extrabold text-gray-900">{formatCurrency(calcTotalIngresos)}</p>
             </div>
-            <div className="p-4 rounded-xl border border-gray-200 bg-white">
-              <p className="text-xs text-gray-500 font-medium mb-1 flex items-center gap-1">
-                <ArrowUpCircle size={14} className="text-red-500" /> Egresos
+            <div className="p-5 rounded-2xl border border-gray-100 bg-gray-50/50 shadow-sm">
+              <p className="text-[13px] text-gray-500 font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <ArrowUpCircle size={16} className="text-red-500" /> Egresos
               </p>
-              <p className="text-2xl font-bold text-gray-900">{formatCurrency(calcTotalEgresos)}</p>
+              <p className="text-2xl font-extrabold text-gray-900">{formatCurrency(calcTotalEgresos)}</p>
             </div>
-            <div className="p-4 rounded-xl border border-primary-100 bg-primary-50">
-              <p className="text-xs text-primary-600 font-medium mb-1">Saldo Calculado</p>
-              <p className="text-2xl font-bold text-primary-700">{formatCurrency(montoCalculadoActual)}</p>
+            <div className="p-5 rounded-2xl border-2 border-primary-100 bg-primary-50/50 shadow-sm relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-16 h-16 bg-primary-100 rounded-bl-full opacity-50"></div>
+              <p className="text-[13px] text-primary-600 font-bold uppercase tracking-wider mb-2 relative z-10">Saldo Calculado</p>
+              <p className="text-2xl font-extrabold text-primary-700 relative z-10">{formatCurrency(montoCalculadoActual)}</p>
             </div>
           </div>
           
-          <div className="flex gap-3">
-            <button className="btn btn-outline bg-white border-gray-200 text-gray-700 hover:bg-gray-50 font-medium" onClick={() => { setMovTipo('ingreso'); setMovimientoModalOpen(true); }}>
-              <ArrowDownCircle size={16} /> Ingreso
+          <div className="flex gap-4 pt-2 border-t border-gray-100">
+            <button className="btn btn-outline bg-white border-gray-200 text-gray-700 hover:bg-gray-50 font-semibold px-5 py-2.5 rounded-xl shadow-sm" onClick={() => { setMovTipo('ingreso'); setMovimientoModalOpen(true); }}>
+              <ArrowDownCircle size={18} className="text-emerald-600" /> Ingreso Manual
             </button>
-            <button className="btn btn-outline bg-white border-gray-200 text-gray-700 hover:bg-gray-50 font-medium" onClick={() => { setMovTipo('egreso'); setMovimientoModalOpen(true); }}>
-              <ArrowUpCircle size={16} /> Egreso
+            <button className="btn btn-outline bg-white border-gray-200 text-gray-700 hover:bg-gray-50 font-semibold px-5 py-2.5 rounded-xl shadow-sm" onClick={() => { setMovTipo('egreso'); setMovimientoModalOpen(true); }}>
+              <ArrowUpCircle size={18} className="text-red-600" /> Egreso Manual
             </button>
-            <button className="btn btn-outline bg-white border-gray-200 text-gray-700 hover:bg-gray-50 font-medium" onClick={() => setCierreModalOpen(true)}>
-              <ClipboardList size={16} /> Arqueo
+            <button className="btn btn-outline bg-white border-gray-200 text-gray-700 hover:bg-gray-50 font-semibold px-5 py-2.5 rounded-xl shadow-sm" onClick={() => setCierreModalOpen(true)}>
+              <ClipboardList size={18} className="text-primary-600" /> Arqueo de Caja
             </button>
           </div>
         </div>
       )}
 
       {openSession && (
-        <div className="mb-8">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">Movimientos de la sesión</h3>
+        <div className="mb-12">
+          <h3 className="text-xl font-extrabold text-gray-900 mb-6 flex items-center gap-2">
+            Movimientos de la sesión
+            <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-sm font-bold">{movimientos.length}</span>
+          </h3>
           {movimientos.length === 0 ? (
-            <div className="card p-6 text-center text-gray-500 font-medium">Aún no hay movimientos registrados.</div>
+            <div className="bg-white rounded-2xl border border-gray-200 p-10 text-center text-gray-500 font-medium shadow-sm">
+              <ClipboardList className="w-12 h-12 mx-auto text-gray-300 mb-4" />
+              Aún no hay movimientos registrados en esta sesión.
+            </div>
           ) : (
             <DataTable
               data={movimientos}
@@ -429,7 +441,11 @@ export default function CajaPage() {
       )}
 
       <div>
-        <h3 className="text-xl font-bold text-gray-900 mb-4">Historial de Sesiones</h3>
+        <h3 className="text-xl font-extrabold text-gray-900 mb-6 flex items-center gap-2">
+          Historial de Sesiones
+          <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-sm font-bold">{sesiones.length}</span>
+        </h3>
+
         <DataTable
           data={sesiones}
           columns={colsSesiones}

@@ -206,6 +206,7 @@ export interface DevolucionVenta {
 export interface CajaSesion {
   id: number
   usuario_id: string
+  username?: string
   fecha_apertura: string
   fecha_cierre: string | null
   monto_inicial: number
