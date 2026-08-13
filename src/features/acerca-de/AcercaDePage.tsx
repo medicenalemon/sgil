@@ -14,7 +14,7 @@ export default function AcercaDePage() {
 
         {/* Version */}
         <p className="text-sm font-medium mb-8" style={{ color: 'var(--color-text-muted)' }}>
-          Versión 2.0
+          Versión 2.1
         </p>
 
         {/* Divider */}
@@ -34,7 +34,7 @@ export default function AcercaDePage() {
         {/* Buttons Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
           <a 
-            href="mailto:contacto@ejemplo.com" 
+            href="mailto:lacasadelatecnologia@protonmail.com" 
             className="flex items-center justify-center gap-3 py-4 px-6 rounded-xl border hover:bg-gray-50 transition-colors"
             style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}
           >
