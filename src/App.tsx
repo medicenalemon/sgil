@@ -18,6 +18,7 @@ import ReportesPage from '@/features/reportes/ReportesPage'
 import AuditoriasPage from '@/features/auditorias/AuditoriasPage'
 import UsuariosPage from '@/features/usuarios/UsuariosPage'
 import PerfilPage from '@/features/perfil/PerfilPage'
+import AcercaDePage from '@/features/acerca-de/AcercaDePage'
 import { canAccess } from '@/lib/permissions'
 import type { UserRole } from '@/lib/permissions'
 import { Toaster } from 'sonner'
@@ -245,6 +246,9 @@ export default function App() {
                 </RequireModule>
               }
             />
+
+            {/* Acerca De */}
+            <Route path="acerca" element={<AcercaDePage />} />
 
             {/* Perfil */}
             <Route path="perfil" element={<PerfilPage />} />
