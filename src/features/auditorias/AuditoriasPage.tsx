@@ -66,7 +66,7 @@ export default function AuditoriasPage() {
     { 
       key: 'fecha', 
       header: 'Fecha',
-      render: (a) => new Date(a.fecha).toLocaleDateString('es-AR'),
+      render: (a) => new Date(a.fecha).toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires', dateStyle: 'short', timeStyle: 'short' }),
       sortable: true
     },
     { key: 'accion', header: 'Acción' }
@@ -135,7 +135,7 @@ export default function AuditoriasPage() {
         {selectedAuditoria && (
           <div className="flex flex-col gap-3">
             <p className="text-[15px]"><span className="text-gray-500">Usuario:</span> <span className="font-medium text-gray-900">{selectedAuditoria.username}</span></p>
-            <p className="text-[15px]"><span className="text-gray-500">Fecha:</span> <span className="font-medium text-gray-900">{new Date(selectedAuditoria.fecha).toLocaleString('es-AR')}</span></p>
+            <p className="text-[15px]"><span className="text-gray-500">Fecha:</span> <span className="font-medium text-gray-900">{new Date(selectedAuditoria.fecha).toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' })}</span></p>
             <p className="text-[15px]"><span className="text-gray-500">Módulo:</span> <span className="font-medium text-gray-900 capitalize">{selectedAuditoria.modulo}</span></p>
             <p className="text-[15px]"><span className="text-gray-500">Acción:</span> <span className="font-medium text-gray-900">{selectedAuditoria.accion}</span></p>
             

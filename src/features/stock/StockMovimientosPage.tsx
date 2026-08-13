@@ -62,7 +62,7 @@ export default function StockMovimientosPage() {
     {
       key: 'fecha',
       header: 'Fecha',
-      render: (m) => new Date(m.fecha).toLocaleDateString('es-AR'),
+      render: (m) => new Date(m.fecha).toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires', dateStyle: 'short', timeStyle: 'short' }),
       sortable: true,
     },
     {
