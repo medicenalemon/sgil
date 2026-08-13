@@ -252,8 +252,16 @@ export default function VentasPage() {
         items: cart.length,
       })
 
+      const itemsWithProducts = itemsData.map((item: any) => {
+        const cartItem = cart.find(c => c.producto.id === item.producto_id)
+        return {
+          ...item,
+          producto: cartItem?.producto
+        }
+      })
+
       toast.success('Venta registrada exitosamente')
-      setSuccessVenta({ venta: ventaData, items: itemsData })
+      setSuccessVenta({ venta: ventaData, items: itemsWithProducts })
 
       // Reset
       setCreateModalOpen(false)

@@ -266,8 +266,16 @@ export default function ComprasPage() {
         items: cart.length,
       })
 
+      const itemsWithProducts = itemsData.map((item: any) => {
+        const cartItem = cart.find(c => c.producto.id === item.producto_id)
+        return {
+          ...item,
+          producto: cartItem?.producto
+        }
+      })
+
       toast.success('Compra registrada exitosamente')
-      setSuccessCompra({ compra: compraData, items: itemsData })
+      setSuccessCompra({ compra: compraData, items: itemsWithProducts })
 
       setCreateModalOpen(false)
       setCart([])
