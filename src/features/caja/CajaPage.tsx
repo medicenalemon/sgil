@@ -360,8 +360,8 @@ export default function CajaPage() {
                 <Wallet className="w-8 h-8" strokeWidth={1.5} />
               </div>
               <div>
-                <h2 className="text-3xl font-extrabold text-gray-900 mb-2">Caja #{openSession.id} — Abierta</h2>
-                <p className="text-[16px] text-gray-500 font-medium">
+                <h2 className="text-2xl font-extrabold text-gray-900 mb-2">Caja #{openSession.id} — Abierta</h2>
+                <p className="text-[14px] text-gray-500 font-medium">
                   Por <span className="font-semibold text-gray-700">{openSession.username || openSession.usuario_id}</span> · desde el {formatDateTime(openSession.fecha_apertura)}
                 </p>
               </div>
