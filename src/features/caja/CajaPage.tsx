@@ -486,8 +486,8 @@ export default function CajaPage() {
       )}
 
       {openSession && (
-        <div className="mb-12">
-          <h3 className="text-xl font-extrabold text-gray-900 mb-6 flex items-center gap-2">
+        <div style={{ marginBottom: '48px' }}>
+          <h3 className="text-xl font-extrabold text-gray-900 flex items-center gap-2" style={{ marginBottom: '20px' }}>
             Movimientos de la sesión
             <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-sm font-bold">{movimientosUnificados.length}</span>
           </h3>
@@ -508,8 +508,8 @@ export default function CajaPage() {
         </div>
       )}
 
-      <div>
-        <h3 className="text-xl font-extrabold text-gray-900 mb-6 flex items-center gap-2">
+      <div style={{ paddingTop: '8px' }}>
+        <h3 className="text-xl font-extrabold text-gray-900 flex items-center gap-2" style={{ marginBottom: '20px' }}>
           Historial de Sesiones
           <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-sm font-bold">{sesiones.length}</span>
         </h3>
