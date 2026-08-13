@@ -221,13 +221,40 @@ export default function ComprasPage() {
 
       if (itemsError) throw itemsError
 
-      // Note: We might want to update the precio_compra of the producto here
-      // because the trigger doesn't do that, but for now we skip or do it separately.
+      // 3. Handle Stock Updates and Movimientos
       for (const item of cart) {
+        // Fetch current stock to avoid stale data
+        const { data: prodData } = await supabase
+          .from('productos')
+          .select('stock')
+          .eq('id', item.producto.id)
+          .single()
+        
+        const currentStock = prodData?.stock || 0
+        const newStock = currentStock + item.cantidad
+
+        // Update product stock and precio_compra
         await supabase
           .from('productos')
-          .update({ precio_compra: item.precio_unitario })
+          .update({ 
+            stock: newStock,
+            precio_compra: item.precio_unitario 
+          })
           .eq('id', item.producto.id)
+
+        // Insert stock movement
+        await supabase
+          .from('movimientos_stock')
+          .insert({
+            fecha: now,
+            producto_id: item.producto.id,
+            tipo: 'entrada',
+            cantidad: item.cantidad,
+            motivo: 'Compra de mercadería',
+            referencia_tipo: 'compra',
+            referencia_id: compraId,
+            usuario_id: user?.id
+          })
       }
 
       const provNombre = proveedores.find((p) => p.id === Number(proveedorId))?.razon_social ?? 'Desconocido'

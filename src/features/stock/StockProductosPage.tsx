@@ -180,6 +180,20 @@ export default function StockProductosPage() {
 
         if (error) throw error
 
+        if (data.stock > 0) {
+          // Log the initial stock as an 'entrada' movement
+          await supabase.from('movimientos_stock').insert({
+            fecha: new Date().toISOString(),
+            producto_id: data.id,
+            tipo: 'entrada',
+            cantidad: data.stock,
+            motivo: 'Stock Inicial',
+            referencia_tipo: null,
+            referencia_id: null,
+            usuario_id: user?.id
+          })
+        }
+
         logAuditoria('stock', 'Creación de producto', {
           productoId: data.id,
           codigo: data.codigo,

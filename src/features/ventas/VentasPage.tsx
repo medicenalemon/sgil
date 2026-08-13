@@ -207,6 +207,39 @@ export default function VentasPage() {
 
       if (itemsError) throw itemsError
 
+      // 3. Handle Stock Updates and Movimientos
+      for (const item of cart) {
+        // Fetch current stock
+        const { data: prodData } = await supabase
+          .from('productos')
+          .select('stock')
+          .eq('id', item.producto.id)
+          .single()
+        
+        const currentStock = prodData?.stock || 0
+        const newStock = Math.max(0, currentStock - item.cantidad) // Prevent negative stock
+
+        // Update product stock
+        await supabase
+          .from('productos')
+          .update({ stock: newStock })
+          .eq('id', item.producto.id)
+
+        // Insert stock movement
+        await supabase
+          .from('movimientos_stock')
+          .insert({
+            fecha: new Date().toISOString(),
+            producto_id: item.producto.id,
+            tipo: 'salida',
+            cantidad: item.cantidad,
+            motivo: 'Venta a cliente',
+            referencia_tipo: 'venta',
+            referencia_id: ventaId,
+            usuario_id: user?.id
+          })
+      }
+
       const clienteNombre = clienteId
         ? clientes.find((c) => c.id === Number(clienteId))?.nombre ?? 'Desconocido'
         : 'Sin cliente'

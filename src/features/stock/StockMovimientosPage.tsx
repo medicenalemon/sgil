@@ -73,27 +73,37 @@ export default function StockMovimientosPage() {
     {
       key: 'tipo',
       header: 'Tipo',
-      render: (m) => (
-        <span 
-          className="px-2 py-1 rounded-full text-xs font-semibold inline-flex items-center gap-1"
-          style={{ 
-            background: m.tipo === 'entrada' ? 'var(--color-success-50)' : 'var(--color-danger-50)',
-            color: m.tipo === 'entrada' ? 'var(--color-success-700)' : 'var(--color-danger-700)'
-          }}
-        >
-          {m.tipo === 'entrada' ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
-          {m.tipo === 'entrada' ? 'Entrada' : 'Salida'}
-        </span>
-      ),
+      render: (m) => {
+        const isFigurativo = m.referencia_tipo === 'devolucion_venta'
+        const bg = isFigurativo ? '#f3f4f6' : (m.tipo === 'entrada' ? 'var(--color-success-50)' : 'var(--color-danger-50)')
+        const col = isFigurativo ? '#4b5563' : (m.tipo === 'entrada' ? 'var(--color-success-700)' : 'var(--color-danger-700)')
+        const icon = isFigurativo ? <Info size={14} /> : (m.tipo === 'entrada' ? <TrendingUp size={14} /> : <TrendingDown size={14} />)
+        const text = isFigurativo ? 'Registro' : (m.tipo === 'entrada' ? 'Entrada' : 'Salida')
+        
+        return (
+          <span 
+            className="px-2 py-1 rounded-full text-xs font-semibold inline-flex items-center gap-1"
+            style={{ background: bg, color: col }}
+          >
+            {icon} {text}
+          </span>
+        )
+      },
     },
     { 
       key: 'cantidad', 
       header: 'Cantidad', 
-      render: (m) => (
-        <span className={`font-semibold ${m.tipo === 'entrada' ? 'text-green-600' : 'text-red-600'}`}>
-          {m.tipo === 'entrada' ? '+' : '-'}{m.cantidad}
-        </span>
-      ),
+      render: (m) => {
+        const isFigurativo = m.referencia_tipo === 'devolucion_venta'
+        const color = isFigurativo ? 'text-gray-500' : (m.tipo === 'entrada' ? 'text-green-600' : 'text-red-600')
+        const prefix = isFigurativo ? '' : (m.tipo === 'entrada' ? '+' : '-')
+        
+        return (
+          <span className={`font-semibold ${color}`} title={isFigurativo ? 'Movimiento figurativo (no afectó stock)' : ''}>
+            {prefix}{m.cantidad}
+          </span>
+        )
+      },
       sortable: true 
     },
     { key: 'motivo', header: 'Motivo' },
