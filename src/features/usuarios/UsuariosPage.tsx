@@ -170,30 +170,27 @@ export default function UsuariosPage() {
 
   const handleDelete = async (u: UserRow) => {
     if (u.protected) {
-      toast.error('No podés deshabilitar un usuario protegido.')
+      toast.error('No podés eliminar un usuario protegido.')
       return
     }
     
     if (u.id === user?.id) {
-      toast.error('No podés deshabilitar tu propio usuario.')
+      toast.error('No podés eliminar tu propio usuario.')
       return
     }
 
-    if (!confirm(`¿Estás seguro que deseas deshabilitar el usuario ${u.username}?`)) return;
+    if (!confirm(`¿Estás seguro que deseas eliminar permanentemente el usuario ${u.username}? Esta acción no se puede deshacer.`)) return;
 
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ active: false })
-        .eq('id', u.id)
+      // First try to delete the auth user via Admin API
+      // If the user has foreign keys (ventas, compras, etc.), it will throw an error
+      await adminAuthApi.deleteUserById(u.id)
 
-      if (error) throw error
-
-      logAuditoria('usuarios', 'Usuario deshabilitado', { id: u.id, username: u.username })
-      toast.success('Usuario deshabilitado correctamente')
+      logAuditoria('usuarios', 'Usuario eliminado', { id: u.id, username: u.username })
+      toast.success('Usuario eliminado correctamente')
       loadData()
     } catch (err: any) {
-      toast.error(err.message || 'Error al deshabilitar el usuario')
+      toast.error(err.message || 'Error al eliminar el usuario. Es posible que tenga registros asociados.')
     }
   }
 
@@ -296,7 +293,7 @@ export default function UsuariosPage() {
               <button 
                 className="btn btn-icon btn-ghost btn-sm p-0 h-auto w-auto" 
                 onClick={(e) => { e.stopPropagation(); handleDelete(u); }} 
-                title="Deshabilitar usuario"
+                title="Eliminar usuario"
               >
                 <Trash2 size={18} className="text-red-500" />
               </button>

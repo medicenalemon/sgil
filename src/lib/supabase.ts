@@ -42,6 +42,17 @@ export const adminAuthApi = {
       throw new Error(err.message || err.msg || 'Error al actualizar usuario')
     }
     return res.json()
+  },
+  deleteUserById: async (uid: string) => {
+    const res = await fetch(`/api/admin-auth/users/${uid}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' }
+    })
+    if (!res.ok) {
+      const err = await res.json()
+      throw new Error(err.message || err.msg || 'Error al eliminar usuario')
+    }
+    return res.json()
   }
 }
 
