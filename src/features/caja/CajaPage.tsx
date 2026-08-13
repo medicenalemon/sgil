@@ -373,33 +373,33 @@ export default function CajaPage() {
             </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6 lg:gap-8 mb-10">
-            <div className="p-6 rounded-3xl border border-gray-100 bg-gray-50/50 shadow-sm">
-              <p className="text-[14px] text-gray-500 font-bold uppercase tracking-wider mb-3">Monto Inicial</p>
-              <p className="text-3xl font-black text-gray-900 truncate" title={formatCurrency(openSession.monto_inicial)}>{formatCurrency(openSession.monto_inicial)}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-6 mb-8">
+            <div className="p-5 md:p-6 rounded-2xl border border-gray-100 bg-gray-50/50 shadow-sm">
+              <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-2">Monto Inicial</p>
+              <p className="text-xl xl:text-2xl font-extrabold text-gray-900">{formatCurrency(openSession.monto_inicial)}</p>
             </div>
-            <div className="p-6 rounded-3xl border border-gray-100 bg-gray-50/50 shadow-sm">
-              <p className="text-[14px] text-gray-500 font-bold uppercase tracking-wider mb-3 flex items-center gap-2">
-                <TrendingUp size={18} className="text-emerald-500" /> Ventas
+            <div className="p-5 md:p-6 rounded-2xl border border-gray-100 bg-gray-50/50 shadow-sm">
+              <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <TrendingUp size={16} className="text-emerald-500" /> Ventas
               </p>
-              <p className="text-3xl font-black text-gray-900 truncate" title={formatCurrency(0)}>{formatCurrency(0)}</p>
+              <p className="text-xl xl:text-2xl font-extrabold text-gray-900">{formatCurrency(0)}</p>
             </div>
-            <div className="p-6 rounded-3xl border border-gray-100 bg-gray-50/50 shadow-sm">
-              <p className="text-[14px] text-gray-500 font-bold uppercase tracking-wider mb-3 flex items-center gap-2">
-                <ArrowDownCircle size={18} className="text-emerald-500" /> Ingresos
+            <div className="p-5 md:p-6 rounded-2xl border border-gray-100 bg-gray-50/50 shadow-sm">
+              <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <ArrowDownCircle size={16} className="text-emerald-500" /> Ingresos
               </p>
-              <p className="text-3xl font-black text-gray-900 truncate" title={formatCurrency(calcTotalIngresos)}>{formatCurrency(calcTotalIngresos)}</p>
+              <p className="text-xl xl:text-2xl font-extrabold text-gray-900">{formatCurrency(calcTotalIngresos)}</p>
             </div>
-            <div className="p-6 rounded-3xl border border-gray-100 bg-gray-50/50 shadow-sm">
-              <p className="text-[14px] text-gray-500 font-bold uppercase tracking-wider mb-3 flex items-center gap-2">
-                <ArrowUpCircle size={18} className="text-red-500" /> Egresos
+            <div className="p-5 md:p-6 rounded-2xl border border-gray-100 bg-gray-50/50 shadow-sm">
+              <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <ArrowUpCircle size={16} className="text-red-500" /> Egresos
               </p>
-              <p className="text-3xl font-black text-gray-900 truncate" title={formatCurrency(calcTotalEgresos)}>{formatCurrency(calcTotalEgresos)}</p>
+              <p className="text-xl xl:text-2xl font-extrabold text-gray-900">{formatCurrency(calcTotalEgresos)}</p>
             </div>
-            <div className="p-6 rounded-3xl border-2 border-primary-100 bg-primary-50/50 shadow-sm relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-20 h-20 bg-primary-100 rounded-bl-full opacity-40"></div>
-              <p className="text-[14px] text-primary-600 font-black uppercase tracking-wider mb-3 relative z-10">Saldo Calculado</p>
-              <p className="text-3xl font-black text-primary-700 relative z-10 truncate" title={formatCurrency(montoCalculadoActual)}>{formatCurrency(montoCalculadoActual)}</p>
+            <div className="p-5 md:p-6 rounded-2xl border-2 border-primary-100 bg-primary-50/50 shadow-sm relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-16 h-16 bg-primary-100 rounded-bl-full opacity-40"></div>
+              <p className="text-xs text-primary-600 font-bold uppercase tracking-wider mb-2 relative z-10">Saldo Calculado</p>
+              <p className="text-xl xl:text-2xl font-extrabold text-primary-700 relative z-10">{formatCurrency(montoCalculadoActual)}</p>
             </div>
           </div>
           
