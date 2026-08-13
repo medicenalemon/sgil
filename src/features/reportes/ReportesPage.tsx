@@ -61,7 +61,11 @@ export default function ReportesPage() {
     ingresosHoy: 0,
     ventasMes: 0,
     productosBajoStock: 0,
-    comprasPendientes: 0
+    comprasPendientes: 0,
+    cajaActual: 0,
+    gananciaMes: 0,
+    stockCritico: 0,
+    crecimiento: 0
   })
 
   useEffect(() => {
@@ -71,32 +75,81 @@ export default function ReportesPage() {
           { data: ventas },
           { data: compras },
           { data: productos },
-          { data: ventaItems }
+          { data: ventaItems },
+          { data: cajaSesiones },
+          { data: cajaMovimientos }
         ] = await Promise.all([
           supabase.from('ventas').select('*'),
           supabase.from('compras').select('*'),
           supabase.from('productos').select('*'),
-          supabase.from('venta_items').select('*, producto:productos(nombre)')
+          supabase.from('venta_items').select('*, producto:productos(nombre)'),
+          supabase.from('caja_sesiones').select('*').eq('estado', 'abierta').order('id', { ascending: false }).limit(1),
+          supabase.from('caja_movimientos').select('*')
         ])
 
         const v = ventas || []
         const c = compras || []
         const p = productos || []
         const vi = ventaItems || []
+        const activeSession = cajaSesiones && cajaSesiones.length > 0 ? cajaSesiones[0] : null
+        const movs = cajaMovimientos || []
 
         // Stats
-        const today = new Date().toISOString().split('T')[0]
-        const currentMonth = new Date().getMonth()
+        const today = new Date()
+        const todayStr = today.toISOString().split('T')[0]
+        const currentMonth = today.getMonth()
+        const currentYear = today.getFullYear()
         
-        const ingresosHoy = v.filter(x => x.fecha.startsWith(today)).reduce((sum, x) => sum + x.total, 0)
-        const ventasMes = v.filter(x => new Date(x.fecha).getMonth() === currentMonth).length
+        const ingresosHoy = v.filter(x => x.fecha.startsWith(todayStr)).reduce((sum, x) => sum + x.total, 0)
+        
+        const ventasMesActual = v.filter(x => {
+          const d = new Date(x.fecha)
+          return d.getMonth() === currentMonth && d.getFullYear() === currentYear
+        })
+        const comprasMesActual = c.filter(x => {
+          const d = new Date(x.fecha)
+          return d.getMonth() === currentMonth && d.getFullYear() === currentYear
+        })
+
+        const ventasMes = ventasMesActual.length
+        const totalVentasMes = ventasMesActual.reduce((sum, x) => sum + x.total, 0)
+        const totalComprasMes = comprasMesActual.reduce((sum, x) => sum + x.total, 0)
+        const gananciaMes = totalVentasMes - totalComprasMes
+
         const bajoStock = p.filter(x => x.stock <= (x.stock_minimo || 5)).length
+        const stockCritico = p.filter(x => x.stock <= 0).length
+
+        let cajaActual = 0
+        if (activeSession) {
+          const sessionMovs = movs.filter(m => m.sesion_id === activeSession.id)
+          const ingresos = sessionMovs.filter(m => m.tipo === 'ingreso').reduce((acc, m) => acc + m.monto, 0)
+          const egresos = sessionMovs.filter(m => m.tipo === 'egreso').reduce((acc, m) => acc + m.monto, 0)
+          cajaActual = (activeSession.monto_inicial || 0) + ingresos - egresos
+        }
+
+        const lastMonthDate = new Date()
+        lastMonthDate.setMonth(lastMonthDate.getMonth() - 1)
+        const lastMonth = lastMonthDate.getMonth()
+        const lastMonthYear = lastMonthDate.getFullYear()
+
+        const totalVentasMesAnterior = v.filter(x => {
+            const d = new Date(x.fecha)
+            return d.getMonth() === lastMonth && d.getFullYear() === lastMonthYear
+        }).reduce((sum, x) => sum + x.total, 0)
+
+        const crecimiento = totalVentasMesAnterior === 0 
+          ? (totalVentasMes > 0 ? 100 : 0) 
+          : ((totalVentasMes - totalVentasMesAnterior) / totalVentasMesAnterior) * 100
 
         setStats({
           ingresosHoy,
           ventasMes,
           productosBajoStock: bajoStock,
-          comprasPendientes: 0 // Optional: compute based on pending logic if any
+          comprasPendientes: 0, // Optional: compute based on pending logic if any
+          cajaActual,
+          gananciaMes,
+          stockCritico,
+          crecimiento
         })
 
         // Ventas 7 dias
@@ -220,27 +273,27 @@ export default function ReportesPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4" style={{ gap: '24px', marginBottom: '48px' }}>
         <AnalyticsCard
           title="Caja Actual"
-          value="$ 15.000,00"
+          value={new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(stats.cajaActual)}
           icon={<Wallet size={28} />}
           color="#10b981"
         />
         <AnalyticsCard
           title="Ganancia del Mes"
-          value="$ 5.000,00"
+          value={new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(stats.gananciaMes)}
           icon={<DollarSign size={28} />}
-          color="#10b981"
+          color={stats.gananciaMes >= 0 ? "#10b981" : "#ef4444"}
         />
         <AnalyticsCard
           title="Stock Crítico"
-          value="0"
+          value={stats.stockCritico.toString()}
           icon={<AlertTriangle size={28} />}
           color="#f59e0b"
         />
         <AnalyticsCard
           title="Crecimiento"
-          value="100.0%"
+          value={`${stats.crecimiento > 0 ? '+' : ''}${stats.crecimiento.toFixed(1)}%`}
           icon={<TrendingUp size={28} />}
-          color="#8b5cf6"
+          color={stats.crecimiento >= 0 ? "#8b5cf6" : "#ef4444"}
         />
       </div>
 
