@@ -42,7 +42,7 @@ export default function AcercaDePage() {
             <span className="text-[15px] font-semibold">Contacto</span>
           </a>
           <a 
-            href="#" 
+            href="https://mauriciomontero.lovable.app/" 
             target="_blank" 
             rel="noopener noreferrer"
             className="flex items-center justify-center gap-3 py-4 px-6 rounded-xl border hover:bg-gray-50 transition-colors"
@@ -52,7 +52,7 @@ export default function AcercaDePage() {
             <span className="text-[15px] font-semibold">Portfolio</span>
           </a>
           <a 
-            href="#" 
+            href="https://github.com/medicenalemon/" 
             target="_blank" 
             rel="noopener noreferrer"
             className="flex items-center justify-center gap-3 py-4 px-6 rounded-xl border hover:bg-gray-50 transition-colors"
@@ -62,7 +62,7 @@ export default function AcercaDePage() {
             <span className="text-[15px] font-semibold">GitHub</span>
           </a>
           <a 
-            href="#" 
+            href="https://www.linkedin.com/in/mauricioalemon/" 
             target="_blank" 
             rel="noopener noreferrer"
             className="flex items-center justify-center gap-3 py-4 px-6 rounded-xl border hover:bg-gray-50 transition-colors"

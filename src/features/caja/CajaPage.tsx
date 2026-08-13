@@ -353,65 +353,65 @@ export default function CajaPage() {
       )}
 
       {openSession && (
-        <div className="bg-white rounded-2xl border border-gray-200 p-8 mb-10 shadow-sm">
-          <div className="flex justify-between items-start mb-8">
-            <div className="flex gap-4 items-center">
-              <div className="text-primary-600 bg-primary-50 p-3 rounded-xl">
-                <Wallet className="w-7 h-7" strokeWidth={1.5} />
+        <div className="bg-white rounded-[24px] border border-gray-200 p-8 lg:p-12 mb-12 shadow-sm">
+          <div className="flex justify-between items-start mb-10">
+            <div className="flex gap-5 items-center">
+              <div className="text-primary-600 bg-primary-50 p-4 rounded-2xl">
+                <Wallet className="w-8 h-8" strokeWidth={1.5} />
               </div>
               <div>
-                <h2 className="text-[22px] font-bold text-gray-900 mb-1">Caja #{openSession.id} — Abierta</h2>
-                <p className="text-[15px] text-gray-500 font-medium">
+                <h2 className="text-3xl font-extrabold text-gray-900 mb-2">Caja #{openSession.id} — Abierta</h2>
+                <p className="text-[16px] text-gray-500 font-medium">
                   Por <span className="font-semibold text-gray-700">{openSession.username || openSession.usuario_id}</span> · desde el {formatDateTime(openSession.fecha_apertura)}
                 </p>
               </div>
             </div>
             <div>
-              <span className="bg-primary-600 text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest shadow-sm">
+              <span className="bg-primary-600 text-white px-5 py-2 rounded-full text-sm font-bold uppercase tracking-widest shadow-sm">
                 Abierta
               </span>
             </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-5 mb-8">
-            <div className="p-5 rounded-2xl border border-gray-100 bg-gray-50/50 shadow-sm">
-              <p className="text-[13px] text-gray-500 font-semibold uppercase tracking-wider mb-2">Monto Inicial</p>
-              <p className="text-2xl font-extrabold text-gray-900">{formatCurrency(openSession.monto_inicial)}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6 lg:gap-8 mb-10">
+            <div className="p-6 rounded-3xl border border-gray-100 bg-gray-50/50 shadow-sm">
+              <p className="text-[14px] text-gray-500 font-bold uppercase tracking-wider mb-3">Monto Inicial</p>
+              <p className="text-3xl font-black text-gray-900 truncate" title={formatCurrency(openSession.monto_inicial)}>{formatCurrency(openSession.monto_inicial)}</p>
             </div>
-            <div className="p-5 rounded-2xl border border-gray-100 bg-gray-50/50 shadow-sm">
-              <p className="text-[13px] text-gray-500 font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <TrendingUp size={16} className="text-emerald-500" /> Ventas
+            <div className="p-6 rounded-3xl border border-gray-100 bg-gray-50/50 shadow-sm">
+              <p className="text-[14px] text-gray-500 font-bold uppercase tracking-wider mb-3 flex items-center gap-2">
+                <TrendingUp size={18} className="text-emerald-500" /> Ventas
               </p>
-              <p className="text-2xl font-extrabold text-gray-900">{formatCurrency(0)}</p>
+              <p className="text-3xl font-black text-gray-900 truncate" title={formatCurrency(0)}>{formatCurrency(0)}</p>
             </div>
-            <div className="p-5 rounded-2xl border border-gray-100 bg-gray-50/50 shadow-sm">
-              <p className="text-[13px] text-gray-500 font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <ArrowDownCircle size={16} className="text-emerald-500" /> Ingresos
+            <div className="p-6 rounded-3xl border border-gray-100 bg-gray-50/50 shadow-sm">
+              <p className="text-[14px] text-gray-500 font-bold uppercase tracking-wider mb-3 flex items-center gap-2">
+                <ArrowDownCircle size={18} className="text-emerald-500" /> Ingresos
               </p>
-              <p className="text-2xl font-extrabold text-gray-900">{formatCurrency(calcTotalIngresos)}</p>
+              <p className="text-3xl font-black text-gray-900 truncate" title={formatCurrency(calcTotalIngresos)}>{formatCurrency(calcTotalIngresos)}</p>
             </div>
-            <div className="p-5 rounded-2xl border border-gray-100 bg-gray-50/50 shadow-sm">
-              <p className="text-[13px] text-gray-500 font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <ArrowUpCircle size={16} className="text-red-500" /> Egresos
+            <div className="p-6 rounded-3xl border border-gray-100 bg-gray-50/50 shadow-sm">
+              <p className="text-[14px] text-gray-500 font-bold uppercase tracking-wider mb-3 flex items-center gap-2">
+                <ArrowUpCircle size={18} className="text-red-500" /> Egresos
               </p>
-              <p className="text-2xl font-extrabold text-gray-900">{formatCurrency(calcTotalEgresos)}</p>
+              <p className="text-3xl font-black text-gray-900 truncate" title={formatCurrency(calcTotalEgresos)}>{formatCurrency(calcTotalEgresos)}</p>
             </div>
-            <div className="p-5 rounded-2xl border-2 border-primary-100 bg-primary-50/50 shadow-sm relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-16 h-16 bg-primary-100 rounded-bl-full opacity-50"></div>
-              <p className="text-[13px] text-primary-600 font-bold uppercase tracking-wider mb-2 relative z-10">Saldo Calculado</p>
-              <p className="text-2xl font-extrabold text-primary-700 relative z-10">{formatCurrency(montoCalculadoActual)}</p>
+            <div className="p-6 rounded-3xl border-2 border-primary-100 bg-primary-50/50 shadow-sm relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-20 h-20 bg-primary-100 rounded-bl-full opacity-40"></div>
+              <p className="text-[14px] text-primary-600 font-black uppercase tracking-wider mb-3 relative z-10">Saldo Calculado</p>
+              <p className="text-3xl font-black text-primary-700 relative z-10 truncate" title={formatCurrency(montoCalculadoActual)}>{formatCurrency(montoCalculadoActual)}</p>
             </div>
           </div>
           
-          <div className="flex gap-4 pt-2 border-t border-gray-100">
-            <button className="btn btn-outline bg-white border-gray-200 text-gray-700 hover:bg-gray-50 font-semibold px-5 py-2.5 rounded-xl shadow-sm" onClick={() => { setMovTipo('ingreso'); setMovimientoModalOpen(true); }}>
-              <ArrowDownCircle size={18} className="text-emerald-600" /> Ingreso Manual
+          <div className="flex flex-wrap gap-5 pt-8 border-t border-gray-100">
+            <button className="btn btn-outline bg-white border-gray-200 text-gray-700 hover:bg-gray-50 font-bold px-6 py-3 rounded-xl shadow-sm text-[15px]" onClick={() => { setMovTipo('ingreso'); setMovimientoModalOpen(true); }}>
+              <ArrowDownCircle size={20} className="text-emerald-600" /> Ingreso Manual
             </button>
-            <button className="btn btn-outline bg-white border-gray-200 text-gray-700 hover:bg-gray-50 font-semibold px-5 py-2.5 rounded-xl shadow-sm" onClick={() => { setMovTipo('egreso'); setMovimientoModalOpen(true); }}>
-              <ArrowUpCircle size={18} className="text-red-600" /> Egreso Manual
+            <button className="btn btn-outline bg-white border-gray-200 text-gray-700 hover:bg-gray-50 font-bold px-6 py-3 rounded-xl shadow-sm text-[15px]" onClick={() => { setMovTipo('egreso'); setMovimientoModalOpen(true); }}>
+              <ArrowUpCircle size={20} className="text-red-600" /> Egreso Manual
             </button>
-            <button className="btn btn-outline bg-white border-gray-200 text-gray-700 hover:bg-gray-50 font-semibold px-5 py-2.5 rounded-xl shadow-sm" onClick={() => setCierreModalOpen(true)}>
-              <ClipboardList size={18} className="text-primary-600" /> Arqueo de Caja
+            <button className="btn btn-outline bg-white border-gray-200 text-gray-700 hover:bg-gray-50 font-bold px-6 py-3 rounded-xl shadow-sm text-[15px]" onClick={() => setCierreModalOpen(true)}>
+              <ClipboardList size={20} className="text-primary-600" /> Arqueo de Caja
             </button>
           </div>
         </div>
