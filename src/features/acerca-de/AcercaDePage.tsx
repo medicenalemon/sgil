@@ -3,7 +3,7 @@ import { Mail, Globe, Code2, Briefcase } from 'lucide-react'
 export default function AcercaDePage() {
   return (
     <div className="animate-fade-in flex items-center justify-center min-h-[calc(100vh-140px)] py-8">
-      <div className="bg-white border rounded-3xl shadow-sm p-10 md:p-16 flex flex-col items-center justify-center max-w-3xl w-full min-h-[700px]" style={{ borderColor: 'var(--color-border-light)' }}>
+      <div className="bg-white border rounded-3xl shadow-sm p-10 md:p-16 flex flex-col items-center justify-center max-w-3xl w-full min-h-[140px]" style={{ borderColor: 'var(--color-border-light)' }}>
         
         {/* Superior: Logo y Versión */}
         <div className="flex flex-col items-center flex-grow justify-end pb-10">
